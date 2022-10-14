@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "chroma": {
+      "commandName": "Project",
+      "commandLineArgs": "#473BF0"
+    }
+  }
+}
