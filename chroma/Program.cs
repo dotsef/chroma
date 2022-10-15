@@ -3,64 +3,40 @@ using System.Reflection;
 
 using Chroma;
 
-if (args is ["--version"])
+var exit = args switch
+{
+    [..] when args.Any(a => a is "--version" or "-v") => VersionCommand(),
+    [var hexcode] => ParseColorCommand(hexcode),
+    _ => UsageCommand(),
+};
+
+return exit;
+
+int VersionCommand()
 {
     var version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
     Debug.Assert(version.ProductVersion is not null, "The version should be known at runtime");
-    Write(version.ProductVersion, Color.Random);
+    Terminal.WriteLine(version.ProductVersion, Color.Random);
+    return 0;
 }
 
-if (args.Length is not 1)
+int ParseColorCommand(in ReadOnlySpan<char> hexcode)
 {
-    Write("Please provide a single color in hex format.", Color.Red);
-    return -1;
-}
-
-var hexcode = args[0];
-
-if (!Color.TryParse(hexcode, null, out var color))
-{
-    Write($"'{hexcode}' is not a parsable hex-formatted color", Color.Red);
-    return -1;
-}
-
-Write($"rgb({color.R}, {color.G}, {color.B})", color);
-return 0;
-
-static void Write(string text, in Color color)
-{
-    var length = text.Length + 6 + 10 + 3 + color.R.DigitCount() + color.G.DigitCount() + color.B.DigitCount();
-    var buffer = string.Create(length, (color, text: text.AsMemory()), (span, data) =>
+    if (!Color.TryParse(hexcode, null, out var color))
     {
-        span[0] = '\u001b';
-        span[1] = '[';
-        span[2] = '3';
-        span[3] = '8';
-        span[4] = ';';
-        span[5] = '2';
-        span[6] = ';';
+        Terminal.WriteLine($"'{hexcode}' is not a parsable hex-formatted color", Color.Red);
+        return -1;
+    }
 
-        var rgbSpan = new RGBSpan(data.color);
-        var i = 7;
-        rgbSpan.R.CopyTo(span[i..(i + rgbSpan.R.Length)]);
-        i += rgbSpan.R.Length;
-        span[i++] = ';';
-        rgbSpan.G.CopyTo(span[i..(i + rgbSpan.G.Length)]);
-        i += rgbSpan.G.Length;
-        span[i++] = ';';
-        rgbSpan.B.CopyTo(span[i..(i + rgbSpan.B.Length)]);
-        i += rgbSpan.B.Length;
-        span[i++] = 'm';
+    var rgb = new RGBSpan(color);
+    Terminal.WriteLine(rgb.Css.ToString(), color);
+    var hsl = new HSLSpan(color);
+    Terminal.WriteLine(hsl.Css.ToString(), color);
+    return 0;
+}
 
-        var text = data.text;
-
-        text.Span.CopyTo(span[i..(i + text.Length)]);
-        i += text.Length;
-
-        span[i++] = '\u001b';
-        span[i++] = '[';
-        span[i++] = '0';
-        span[i++] = 'm';
-    });
-    Console.WriteLine(buffer);
+int UsageCommand()
+{
+    Terminal.WriteLine("Please provide a single color in hex format.", Color.Red);
+    return -1;
 }

@@ -7,6 +7,7 @@
         <Nullable>enable</Nullable>
         <LangVersion>preview</LangVersion>
         <Version>1.0.0-alpha-0001</Version>
+        <RootNamespace>Chroma</RootNamespace>
     </PropertyGroup>
 
 </Project>

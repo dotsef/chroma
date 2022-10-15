@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace Chroma;
 
-readonly struct Color : ISpanParsable<Color>
+public readonly struct Color : ISpanParsable<Color>
 {
     public required byte R { get; init; }
     public required byte G { get; init; }
