@@ -3,6 +3,10 @@
     "chroma": {
       "commandName": "Project",
       "commandLineArgs": "#473BF0"
+    },
+    "chroma --version": {
+      "commandName": "Project",
+      "commandLineArgs": "--version"
     }
   }
 }
