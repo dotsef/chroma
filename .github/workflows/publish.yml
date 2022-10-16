@@ -1,4 +1,4 @@
-name: publish to nuget
+name: Publish to NuGet
 
 on:
   push:
@@ -16,6 +16,8 @@ jobs:
         with:
           global-json-file: global.json
       - run: dotnet tool install -g gitversion.tool --version 5.10.3
+      - run: dotnet-gitversion -showvariable NuGetVersion
+        name: Debug - check if gitversion works
       - run: VERSION=$(dotnet-gitversion -showvariable NuGetVersion)
       - run: dotnet restore
       - run: dotnet build -c Release --no-restore
