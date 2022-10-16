@@ -16,9 +16,9 @@ jobs:
         with:
           global-json-file: global.json
       - run: dotnet tool install -g gitversion.tool --version 5.10.3
+      - run: git rev-parse --is-shallow-repository || git fetch --unshallow
       - run: dotnet-gitversion -showvariable NuGetVersion
         name: Debug - check if gitversion works
-      - run: git rev-parse --is-shallow-repository || git fetch --unshallow
       - run: VERSION=$(dotnet-gitversion -showvariable NuGetVersion)
       - run: dotnet restore
       - run: dotnet build -c Release --no-restore
