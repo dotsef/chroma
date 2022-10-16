@@ -24,5 +24,7 @@ jobs:
       - run: dotnet test
       - run: dotnet pack -c Release -p:PackageVersion=$VERSION
       - run: dotnet nuget push chroma/bin/Release/dotsef-chroma.$VERSION.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.API_KEY_NUGET }}
+      - run: git config user.email "${{ github.action }}.${{ github.run_id }}@dotsef.com"
+      - run: git config user.name "Action '${{ github.action }}' Run ${{ github.run_id }}"
       - run: git tag -a v$VERSION -m "Automatic tag v$VERSION by Github Actions ${{ github.run_id }}"
       - run: git push origin v$VERSION
