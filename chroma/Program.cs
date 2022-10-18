@@ -6,7 +6,7 @@ using Chroma;
 var exit = args switch
 {
     [..] when args.Any(a => a is "--version" or "-v") => VersionCommand(),
-    [var hexcode] => ParseColorCommand(hexcode),
+    [var color] => ParseColorCommand(color),
     _ => UsageCommand(),
 };
 
@@ -20,23 +20,27 @@ int VersionCommand()
     return 0;
 }
 
-int ParseColorCommand(in ReadOnlySpan<char> hexcode)
+int ParseColorCommand(in ReadOnlySpan<char> color)
 {
-    if (!Color.TryParse(hexcode, null, out var color))
+    if (!Color.TryParse(color, null, out var parsedColor))
     {
-        Terminal.WriteLine($"'{hexcode}' is not a parsable hex-formatted color", Color.Red);
+        Terminal.WriteLine($"'{color}' is not a parsable color", Color.Red);
         return -1;
     }
 
-    var rgb = new RGBSpan(color);
-    Terminal.WriteLine(rgb.Css.ToString(), color);
-    var hsl = new HSLSpan(color);
-    Terminal.WriteLine(hsl.Css.ToString(), color);
+    var rgb = new RGBSpan(parsedColor);
+    Terminal.WriteLine(rgb.Css, parsedColor, 2);
+    var hsl = new HSLSpan(parsedColor);
+    Terminal.WriteLine(hsl.Css, parsedColor, 2);
+    var hex = new HexSpan(parsedColor);
+    Terminal.WriteLine(hex.Css, parsedColor, 2);
     return 0;
 }
 
 int UsageCommand()
 {
     Terminal.WriteLine("Please provide a single color in hex format.", Color.Red);
+    Console.WriteLine();
+    Terminal.WriteLine("Usage: chroma [color]");
     return -1;
 }

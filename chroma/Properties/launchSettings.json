@@ -1,8 +1,12 @@
 {
   "profiles": {
-    "chroma": {
+    "chroma #473BF0": {
       "commandName": "Project",
       "commandLineArgs": "#473BF0"
+    },
+    "chroma \"rgb(255, 128, 16)\"": {
+      "commandName": "Project",
+      "commandLineArgs": "\"rgb(255, 128, 16)\""
     },
     "chroma --version": {
       "commandName": "Project",

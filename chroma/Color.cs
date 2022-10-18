@@ -13,8 +13,14 @@ public readonly struct Color : ISpanParsable<Color>
 
     private const NumberStyles Hex = NumberStyles.HexNumber;
 
-    public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, [MaybeNullWhen(false)] out Color result)
+    public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, out Color result)
     {
+        if (s is ['r', 'g', 'b', '(', .. var rgbParts, ')'])
+            return TryParseRgb(rgbParts, provider, out result);
+
+        if (s is ['h', 's', 'l', '(', .. var hslParts, ')'])
+            return TryParseHsl(hslParts, provider, out result);
+
         if (s.Length > 0 && s[0] is '#')
             s = s[1..];
 
@@ -26,6 +32,53 @@ public readonly struct Color : ISpanParsable<Color>
             8 /* RRGGBBAA */ => TryParse8(s, provider, out result),
             _ => Failure(out result),
         };
+
+        bool TryParseRgb(ReadOnlySpan<char> s, IFormatProvider? provider, out Color result)
+        {
+            var i = 0;
+            var j = 0;
+
+            while (i < s.Length && char.IsDigit(s[i])) { i++; }
+
+            if (!byte.TryParse(s[j..i], provider, out var r))
+            {
+                result = default;
+                return false;
+            }
+
+            do { i++; } while (char.IsWhiteSpace(s[i]) || s[i] is ',');
+
+            j = i;
+
+            while (i < s.Length && char.IsDigit(s[i])) { i++; }
+
+            if (!byte.TryParse(s[j..i], provider, out var g))
+            {
+                result = default;
+                return false;
+            }
+
+            do { i++; } while (char.IsWhiteSpace(s[i]) || s[i] is ',');
+
+            j = i;
+
+            while (i < s.Length && char.IsDigit(s[i])) { i++; }
+
+            if (!byte.TryParse(s[j..i], provider, out var b))
+            {
+                result = default;
+                return false;
+            }
+
+            result = new Color { R = r, G = g, B = b };
+            return true;
+        }
+
+        bool TryParseHsl(ReadOnlySpan<char> s, IFormatProvider? provider, out Color result)
+        {
+            result = default;
+            return false;
+        }
 
         bool TryParse3(ReadOnlySpan<char> s, IFormatProvider? provider, out Color result)
         {
@@ -79,7 +132,7 @@ public readonly struct Color : ISpanParsable<Color>
         }
     }
 
-    public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, [MaybeNullWhen(false)] out Color result)
+    public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, out Color result)
     {
         if (string.IsNullOrWhiteSpace(s))
         {
