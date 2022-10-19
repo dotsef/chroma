@@ -11,6 +11,10 @@
     "chroma --version": {
       "commandName": "Project",
       "commandLineArgs": "--version"
+    },
+    "chroma --help": {
+      "commandName": "Project",
+      "commandLineArgs": "--help bogus"
     }
   }
 }

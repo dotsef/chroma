@@ -29,18 +29,22 @@ int ParseColorCommand(in ReadOnlySpan<char> color)
     }
 
     var rgb = new RGBSpan(parsedColor);
-    Terminal.WriteLine(rgb.Css, parsedColor, 2);
+    Terminal.WriteLine(rgb.Css, parsedColor, indent: 2);
     var hsl = new HSLSpan(parsedColor);
-    Terminal.WriteLine(hsl.Css, parsedColor, 2);
+    Terminal.WriteLine(hsl.Css, parsedColor, indent: 2);
     var hex = new HexSpan(parsedColor);
-    Terminal.WriteLine(hex.Css, parsedColor, 2);
+    Terminal.WriteLine(hex.Css, parsedColor, indent: 2);
     return 0;
 }
 
 int UsageCommand()
 {
-    Terminal.WriteLine("Please provide a single color in hex format.", Color.Red);
-    Console.WriteLine();
-    Terminal.WriteLine("Usage: chroma [color]");
+    Terminal.Write($"""
+        {"Please provide a single color in hex, rgb, or hsl format.":F00}
+
+            Usage: chroma [color]
+
+        """);
+
     return -1;
 }
