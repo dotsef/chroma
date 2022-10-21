@@ -15,6 +15,10 @@
     "chroma --help": {
       "commandName": "Project",
       "commandLineArgs": "--help bogus"
+    },
+    "chroma --bg": {
+      "commandName": "Project",
+      "commandLineArgs": "--bg"
     }
   }
 }

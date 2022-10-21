@@ -29,11 +29,11 @@ int ParseColorCommand(in ReadOnlySpan<char> color)
     }
 
     var rgb = new RGBSpan(parsedColor);
-    Terminal.WriteLine(rgb.Css, parsedColor, indent: 2);
+    Terminal.WriteLine(rgb.Css, parsedColor);
     var hsl = new HSLSpan(parsedColor);
-    Terminal.WriteLine(hsl.Css, parsedColor, indent: 2);
+    Terminal.WriteLine(hsl.Css, parsedColor);
     var hex = new HexSpan(parsedColor);
-    Terminal.WriteLine(hex.Css, parsedColor, indent: 2);
+    Terminal.WriteLine(hex.Css, parsedColor);
     return 0;
 }
 
