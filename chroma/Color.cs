@@ -165,5 +165,8 @@ public readonly struct Color : ISpanParsable<Color>
             };
         }
     }
+
     public static readonly Color Red = new() { R = 255, G = 0, B = 0 };
+
+    public static readonly Color White = new() { R = 255, G = 255, B = 255 };
 }

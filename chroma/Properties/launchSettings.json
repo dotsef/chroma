@@ -1,12 +1,16 @@
 {
   "profiles": {
-    "chroma #473BF0": {
+    "chroma #138A36": {
       "commandName": "Project",
-      "commandLineArgs": "#473BF0"
+      "commandLineArgs": "#138A36"
     },
-    "chroma \"rgb(255, 128, 16)\"": {
+    "chroma rgb(255, 128, 16)": {
       "commandName": "Project",
-      "commandLineArgs": "\"rgb(255, 128, 16)\""
+      "commandLineArgs": "rgb(255, 128, 16)"
+    },
+    "chroma hsl(255 72% 16%)": {
+      "commandName": "Project",
+      "commandLineArgs": "hsl(255 72% 16%)"
     },
     "chroma --version": {
       "commandName": "Project",

@@ -6,8 +6,8 @@ using Chroma;
 var exit = args switch
 {
     [..] when args.Any(a => a is "--version" or "-v") => VersionCommand(),
-    [var color] => ParseColorCommand(color),
-    _ => UsageCommand(),
+    [..] when args.Any(a => a is "--help" or "-h") => UsageCommand(),
+    [..] => ParseColorCommand(string.Join(" ", args)),
 };
 
 return exit;
@@ -16,35 +16,42 @@ int VersionCommand()
 {
     var version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
     Debug.Assert(version.ProductVersion is not null, "The version should be known at runtime");
-    Terminal.WriteLine(version.ProductVersion, Color.Random);
+    Console.WriteLine(version.ProductVersion.Colorize(Color.Random));
     return 0;
 }
 
-int ParseColorCommand(in ReadOnlySpan<char> color)
+int ParseColorCommand(in ReadOnlySpan<char> input)
 {
-    if (!Color.TryParse(color, null, out var parsedColor))
-    {
-        Terminal.WriteLine($"'{color}' is not a parsable color", Color.Red);
-        return -1;
-    }
+    if (!Color.TryParse(input, null, out var parsedColor))
+        return ErrorCommand(input);
 
-    var rgb = new RGBSpan(parsedColor);
-    Terminal.WriteLine(rgb.Css, parsedColor);
-    var hsl = new HSLSpan(parsedColor);
-    Terminal.WriteLine(hsl.Css, parsedColor);
-    var hex = new HexSpan(parsedColor);
-    Terminal.WriteLine(hex.Css, parsedColor);
+    var (h, s, l) = parsedColor.ToHSL();
+
+    Console.Write($"""
+
+          rgb({parsedColor.R}, {parsedColor.G}, {parsedColor.B})
+          hsl({h:N0} {s * 100d:N0}% {l * 100d:N0}%)
+          #{parsedColor.R:X2}{parsedColor.G:X2}{parsedColor.B:X2}
+
+        """.Colorize(parsedColor));
+
     return 0;
 }
 
 int UsageCommand()
 {
-    Terminal.Write($"""
-        {"Please provide a single color in hex, rgb, or hsl format.":F00}
+    Console.Write($"""
+        Convert between color formats by providing a color in any format
 
             Usage: chroma [color]
 
         """);
 
+    return 0;
+}
+
+int ErrorCommand(in ReadOnlySpan<char> input)
+{
+    Console.WriteLine($"'{input.Colorize(Color.Red)}' is not a recognized command or parsable color");
     return -1;
 }
