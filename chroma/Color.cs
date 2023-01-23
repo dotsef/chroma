@@ -25,6 +25,9 @@ public readonly struct Color : ISpanParsable<Color>
 
     public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, out Color result)
     {
+        if (s is ['r', 'g', 'b', 'a', .. var rgbaParts])
+            return TryParseRgba(rgbaParts.TrimStart(_trimStart).TrimEnd(_trimEnd), provider, out result);
+
         if (s is ['r', 'g', 'b', .. var rgbParts])
             return TryParseRgb(rgbParts.TrimStart(_trimStart).TrimEnd(_trimEnd), provider, out result);
 
@@ -48,39 +51,42 @@ public readonly struct Color : ISpanParsable<Color>
             var i = 0;
             var j = 0;
 
-            while (i < s.Length && char.IsDigit(s[i])) { i++; }
-
-            if (!byte.TryParse(s[j..i], provider, out var r))
-            {
-                result = default;
-                return false;
-            }
-
-            do { i++; } while (char.IsWhiteSpace(s[i]) || s[i] is ',');
-
-            j = i;
-
-            while (i < s.Length && char.IsDigit(s[i])) { i++; }
-
-            if (!byte.TryParse(s[j..i], provider, out var g))
-            {
-                result = default;
-                return false;
-            }
-
-            do { i++; } while (char.IsWhiteSpace(s[i]) || s[i] is ',');
-
-            j = i;
-
-            while (i < s.Length && char.IsDigit(s[i])) { i++; }
-
-            if (!byte.TryParse(s[j..i], provider, out var b))
-            {
-                result = default;
-                return false;
-            }
+            RgbParseNext(ref i, ref j, s, out var r);
+            RgbParseNext(ref i, ref j, s, out var g);
+            RgbParseNext(ref i, ref j, s, out var b);
 
             result = new Color { R = r, G = g, B = b };
+            return true;
+        }
+
+        bool TryParseRgba(ReadOnlySpan<char> s, IFormatProvider? provider, out Color result)
+        {
+            var i = 0;
+            var j = 0;
+
+            RgbParseNext(ref i, ref j, s, out var r);
+            RgbParseNext(ref i, ref j, s, out var g);
+            RgbParseNext(ref i, ref j, s, out var b);
+            RgbParseNext(ref i, ref j, s, out var a);
+
+            result = new Color { R = r, G = g, B = b, A = a };
+            return true;
+        }
+
+        bool RgbParseNext(ref int i, ref int j, ReadOnlySpan<char> s, out byte part)
+        {
+            while (i < s.Length && char.IsDigit(s[i])) { i++; }
+
+            if (!byte.TryParse(s[j..i], provider, out part))
+            {
+                part = default;
+                return false;
+            }
+
+            do { i++; } while (i < s.Length && (char.IsWhiteSpace(s[i]) || s[i] is ','));
+
+            j = i;
+
             return true;
         }
 

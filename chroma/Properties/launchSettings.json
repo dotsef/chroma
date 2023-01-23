@@ -23,6 +23,10 @@
     "chroma --bg": {
       "commandName": "Project",
       "commandLineArgs": "--bg"
+    },
+    "chroma rgba(29,38,113,1)": {
+      "commandName": "Project",
+      "commandLineArgs": "rgba(29,38,113,1)"
     }
   }
 }
