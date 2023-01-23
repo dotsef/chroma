@@ -13,13 +13,23 @@ public readonly struct Color : ISpanParsable<Color>
 
     private const NumberStyles Hex = NumberStyles.HexNumber;
 
+    private static readonly char[] _trimStart = new char[]
+    {
+        ' ', '('
+    };
+
+    private static readonly char[] _trimEnd = new char[]
+    {
+        ' ', ')'
+    };
+
     public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, out Color result)
     {
-        if (s is ['r', 'g', 'b', '(', .. var rgbParts, ')'])
-            return TryParseRgb(rgbParts, provider, out result);
+        if (s is ['r', 'g', 'b', .. var rgbParts])
+            return TryParseRgb(rgbParts.TrimStart(_trimStart).TrimEnd(_trimEnd), provider, out result);
 
-        if (s is ['h', 's', 'l', '(', .. var hslParts, ')'])
-            return TryParseHsl(hslParts, provider, out result);
+        if (s is ['h', 's', 'l', .. var hslParts])
+            return TryParseHsl(hslParts.TrimStart(_trimStart).TrimEnd(_trimEnd), provider, out result);
 
         if (s.Length > 0 && s[0] is '#')
             s = s[1..];
