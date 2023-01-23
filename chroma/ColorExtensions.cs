@@ -26,6 +26,9 @@ public static class ColorExtensions
             ? 60d * (((b - r) / diff) + 2d)
             : 60d * (((r - g) / diff) + 4d);
 
+        while (h < 0)
+            h += 360d;
+
         return (h, s, l);
     }
 
@@ -44,6 +47,7 @@ public static class ColorExtensions
             >= 180d and < 240d => (0d, x, c),
             >= 240d and < 300d => (x, 0d, c),
             >= 300d and <= 360d => (c, 0d, x),
+            _ => throw new ArgumentOutOfRangeException(nameof(h), "The given hue was outside the allowed range of [0, 360]")
         };
         r += m;
         g += m;
